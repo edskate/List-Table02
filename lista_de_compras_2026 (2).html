@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lista de Compras</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(180deg, #05070d 0%, #111827 100%);
+      color: #ffffff;
+    }
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    h1, h2 {
+      margin-top: 0;
+      color: #4db8ff;
+    }
+    .subtitle {
+      color: #cbd5e1;
+      margin-bottom: 18px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 18px;
+    }
+    .card {
+      background: rgba(17, 24, 39, 0.95);
+      border: 1px solid rgba(77, 184, 255, 0.28);
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: 0 0 18px rgba(77, 184, 255, 0.08);
+    }
+    label {
+      display: block;
+      margin-bottom: 6px;
+      color: #4db8ff;
+      font-weight: bold;
+      font-size: 14px;
+    }
+    input, select, button {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 12px;
+      border-radius: 12px;
+      border: 1px solid #334155;
+      background: #0b1220;
+      color: #fff;
+      font-size: 15px;
+    }
+    button {
+      background: linear-gradient(180deg, #4db8ff 0%, #9b111e 100%);
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+      transition: .2s ease;
+    }
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 0 12px rgba(155, 17, 30, 0.55);
+    }
+    .secondary {
+      background: #0b1220;
+      border: 1px solid #4db8ff;
+      color: #4db8ff;
+    }
+    .danger {
+      background: #9b111e;
+      color: #fff;
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .stat {
+      background: #0b1220;
+      border: 1px solid rgba(77, 184, 255, 0.22);
+      border-radius: 14px;
+      padding: 14px;
+      text-align: center;
+    }
+    .stat strong {
+      display: block;
+      font-size: 24px;
+      color: #4db8ff;
+      margin-bottom: 4px;
+    }
+    .toolbar {
+      display: grid;
+      grid-template-columns: 1fr 180px 180px;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .list {
+      display: grid;
+      gap: 12px;
+    }
+    .item {
+      background: #0b1220;
+      border: 1px solid rgba(77, 184, 255, 0.2);
+      border-radius: 16px;
+      padding: 14px;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 12px;
+      align-items: center;
+    }
+    .item.comprado {
+      opacity: 0.72;
+      border-color: rgba(34, 197, 94, 0.35);
+    }
+    .item.comprado .nome-item {
+      text-decoration: line-through;
+    }
+    .check {
+      width: 22px;
+      height: 22px;
+      accent-color: #4db8ff;
+      cursor: pointer;
+    }
+    .nome-item {
+      font-size: 18px;
+      font-weight: bold;
+      color: #ffffff;
+    }
+    .meta {
+      color: #cbd5e1;
+      font-size: 13px;
+      margin-top: 4px;
+    }
+    .price {
+      color: #4db8ff;
+      font-weight: bold;
+      font-size: 18px;
+    }
+    .actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+    .actions button {
+      width: auto;
+      margin-bottom: 0;
+      padding: 9px 12px;
+      font-size: 13px;
+    }
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      background: rgba(77, 184, 255, 0.14);
+      color: #4db8ff;
+      border: 1px solid rgba(77, 184, 255, 0.22);
+      margin-right: 6px;
+    }
+    .empty {
+      text-align: center;
+      color: #94a3b8;
+      padding: 26px 12px;
+      border: 1px dashed #334155;
+      border-radius: 14px;
+    }
+    @media (max-width: 900px) {
+      .grid { grid-template-columns: 1fr; }
+      .toolbar { grid-template-columns: 1fr; }
+      .stats { grid-template-columns: 1fr; }
+      .item { grid-template-columns: auto 1fr; }
+      .item > div:last-child { grid-column: 1 / -1; }
+    }
+    @media print {
+      body { background: #fff; color: #000; }
+      .card, .item, .stat { background: #fff; color: #000; box-shadow: none; }
+      button, .toolbar, .check { display: none !important; }
+      .nome-item, .price, h1, h2 { color: #000 !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Lista de Compras • 2026</h1>
+    <div class="subtitle">Cadastre compras e gastos com aluguel, internet e comida para pets. Informe a data, a quantidade e o valor de cada despesa. Marque como pago para registrar o pagamento no histórico.</div>
+
+    <div class="grid">
+      <div class="card">
+        <h2>Novo Item</h2>
+        <label for="dataCompra">Data da compra — 2026</label>
+        <input id="dataCompra" type="date" min="2026-01-01" max="2026-12-31" required onchange="atualizarDataSelecionada()" />
+        <div id="dataExtenso" class="meta" style="margin-bottom:16px" aria-live="polite"></div>
+        <label>Nome do produto</label>
+        <input id="nome" type="text" placeholder="Ex: Arroz, aluguel, internet ou ração" />
+
+        <label>Categoria</label>
+        <select id="categoria">
+          <option value="Alimentos">Alimentos</option>
+          <option value="Bebidas">Bebidas</option>
+          <option value="Limpeza">Limpeza</option>
+          <option value="Higiene">Higiene</option>
+          <option value="Figurino">Figurino</option>
+          <option value="Aluguel">Aluguel</option>
+          <option value="Internet">Internet</option>
+          <option value="Comida para pets">Comida para pets</option>
+          <option value="Outros">Outros</option>
+        </select>
+
+        <label>Quantidade</label>
+        <input id="quantidade" type="number" min="1" value="1" />
+
+        <label>Valor unitário (R$)</label>
+        <input id="valor" type="number" min="0" step="0.01" placeholder="0.00" />
+
+        <label>Observação</label>
+        <input id="obs" type="text" placeholder="Ex: marca preferida" />
+
+        <button onclick="adicionarItem()">Adicionar à lista</button>
+        <button class="secondary" onclick="limparFormulario()">Limpar</button>
+        <button class="secondary" onclick="window.print()">Exportar PDF</button>
+      </div>
+
+      <div class="card">
+        <div class="stats">
+          <div class="stat"><strong id="totalItens">0</strong>Total de itens</div>
+          <div class="stat"><strong id="comprados">0</strong>Itens pagos</div>
+          <div class="stat"><strong id="valorTotal">R$ 0,00</strong>Total estimado</div>
+        </div>
+
+        <div class="toolbar">
+          <input id="busca" type="text" placeholder="Pesquisar item..." oninput="renderLista()" />
+          <select id="filtroCategoria" onchange="renderLista()">
+            <option value="Todos">Todas categorias</option>
+            <option value="Alimentos">Alimentos</option>
+            <option value="Bebidas">Bebidas</option>
+            <option value="Limpeza">Limpeza</option>
+            <option value="Higiene">Higiene</option>
+            <option value="Figurino">Figurino</option>
+            <option value="Aluguel">Aluguel</option>
+            <option value="Internet">Internet</option>
+            <option value="Comida para pets">Comida para pets</option>
+            <option value="Outros">Outros</option>
+          </select>
+          <select id="filtroStatus" onchange="renderLista()">
+            <option value="Todos">Todos</option>
+            <option value="Pendentes">A pagar</option>
+            <option value="Comprados">Itens pagos</option>
+          </select>
+        </div>
+
+        <div class="actions" style="margin-bottom: 14px;">
+          <button class="secondary" onclick="marcarTodos(true)">Marcar todos como pagos</button>
+          <button class="secondary" onclick="marcarTodos(false)">Marcar todos como a pagar</button>
+          <button class="danger" onclick="limparComprados()">Remover itens pagos</button>
+        </div>
+
+        <div id="lista" class="list"></div>
+      </div>
+    </div>
+  </div>
+
+  <section class="container" aria-labelledby="tituloHistorico">
+    <div class="card">
+      <h2 id="tituloHistorico">Histórico de compras e gastos</h2>
+      <p class="subtitle">Registros salvos automaticamente neste navegador. O histórico permanece mesmo se um item for removido da lista. Para guardar uma cópia fora deste navegador, use Exportar PDF.</p>
+      <div id="avisoSalvamento" role="status" class="meta"></div>
+      <div id="historico" class="list" style="margin-top:14px"></div>
+    </div>
+  </section>
+  <script>
+    const CHAVE = 'lista_compras_edy_v1';
+    let itens = [];
+    let historico = [];
+    const CHAVE_HISTORICO = CHAVE + '_historico';
+
+    function registrarHistorico(acao, item) {
+      historico.push({ acao, item: {...item}, momento: new Date().toISOString() });
+    }
+
+    function renderHistorico() {
+      const area = document.getElementById('historico');
+      area.innerHTML = historico.length ? historico.slice().reverse().map(registro => {
+        const item = registro.item;
+        return `<div class="item"><div style="grid-column:1/-1">
+          <div class="nome-item">${escaparTexto(item.nome)}</div>
+          <div class="meta">${escaparTexto(registro.acao)} • ${escaparTexto(new Date(registro.momento).toLocaleString('pt-BR'))}</div>
+          <div class="meta">${escaparTexto(item.categoria)} • Quantidade: ${escaparTexto(item.quantidade)} • Total: ${formatarMoeda(item.quantidade * item.valor)}</div>
+          <div class="meta">${item.dataCompra ? escaparTexto(formatarDataCompleta(item.dataCompra)) : escaparTexto(item.criadoEm || 'Data não informada')} • ${item.comprado ? 'Pago' : 'A pagar'}</div>
+          ${item.obs ? '<div class="meta">' + escaparTexto(item.obs) + '</div>' : ''}
+        </div></div>`;
+      }).join('') : '<div class="empty">Os registros aparecerão aqui ao adicionar compras e gastos.</div>';
+    }
+
+    function dataPadrao2026() {
+      const hoje = new Date();
+      return '2026-' + String(hoje.getMonth() + 1).padStart(2, '0') + '-' + String(hoje.getDate()).padStart(2, '0');
+    }
+
+    function formatarDataCompleta(data) {
+      if (!data) return 'Data não informada';
+      const partes = data.split('-').map(Number);
+      const dia = new Date(partes[0], partes[1] - 1, partes[2]);
+      return dia.toLocaleDateString('pt-BR', {weekday: 'long', day: '2-digit', month: 'long', year: 'numeric'});
+    }
+
+    function atualizarDataSelecionada() {
+      const campo = document.getElementById('dataCompra');
+      document.getElementById('dataExtenso').textContent = campo.value && campo.validity.valid
+        ? formatarDataCompleta(campo.value) : 'Selecione uma data válida de 2026.';
+    }
+
+    function salvar() {
+      try {
+        localStorage.setItem(CHAVE, JSON.stringify(itens));
+        localStorage.setItem(CHAVE_HISTORICO, JSON.stringify(historico));
+        document.getElementById('avisoSalvamento').textContent = 'Lista e histórico salvos neste navegador.';
+      } catch {
+        document.getElementById('avisoSalvamento').textContent = 'Não foi possível salvar neste navegador. Exporte um PDF para guardar os registros.';
+      }
+      renderLista();
+      atualizarResumo();
+      renderHistorico();
+    }
+
+    function carregar() {
+      try {
+        const dados = JSON.parse(localStorage.getItem(CHAVE) || '[]');
+        const registros = JSON.parse(localStorage.getItem(CHAVE_HISTORICO) || '[]');
+        itens = Array.isArray(dados) ? dados : [];
+        historico = Array.isArray(registros) ? registros : [];
+        if (!historico.length && itens.length) {
+          itens.forEach(item => registrarHistorico('Registro recuperado da lista', item));
+        }
+        salvar();
+      } catch {
+        document.getElementById('avisoSalvamento').textContent = 'Não foi possível carregar os dados salvos. Verifique as permissões de armazenamento do navegador.';
+        renderLista();
+        atualizarResumo();
+        renderHistorico();
+      }
+    }
+
+    function formatarMoeda(valor) {
+      return Number(valor || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
+
+    function escaparTexto(valor) {
+      const elemento = document.createElement('span');
+      elemento.textContent = valor;
+      return elemento.innerHTML;
+    }
+
+    function limparFormulario() {
+      document.getElementById('nome').value = '';
+      document.getElementById('categoria').value = 'Alimentos';
+      document.getElementById('quantidade').value = 1;
+      document.getElementById('valor').value = '';
+      document.getElementById('obs').value = '';
+    }
+
+    function adicionarItem() {
+      const nome = document.getElementById('nome').value.trim();
+      const categoria = document.getElementById('categoria').value;
+      const campoQuantidade = document.getElementById('quantidade');
+      const campoValor = document.getElementById('valor');
+      const quantidade = campoQuantidade.valueAsNumber;
+      const valor = campoValor.value === '' ? 0 : campoValor.valueAsNumber;
+      const obs = document.getElementById('obs').value.trim();
+      const campoData = document.getElementById('dataCompra');
+      if (!campoData.value || !campoData.validity.valid) {
+        alert('Selecione uma data válida entre 01/01/2026 e 31/12/2026.');
+        return;
+      }
+
+      if (!nome) {
+        alert('Digite o nome do produto.');
+        return;
+      }
+      if (!campoQuantidade.validity.valid || !Number.isSafeInteger(quantidade) || quantidade < 1) {
+        alert('Digite uma quantidade válida.');
+        return;
+      }
+
+      if (!campoValor.validity.valid || !Number.isFinite(quantidade * valor)) {
+        alert('Digite um valor unitário válido, com até duas casas decimais.');
+        return;
+      }
+
+      itens.push({
+        id: Date.now().toString(),
+        nome,
+        categoria,
+        quantidade,
+        valor,
+        obs,
+        comprado: false,
+        dataCompra: campoData.value,
+        criadoEm: new Date().toLocaleDateString('pt-BR')
+      });
+
+      registrarHistorico('Adicionado', itens[itens.length - 1]);
+      salvar();
+      limparFormulario();
+    }
+
+    function atualizarResumo() {
+      const totalItens = itens.length;
+      const comprados = itens.filter(i => i.comprado).length;
+      const valorTotal = itens.reduce((s, i) => s + (i.quantidade * i.valor), 0);
+
+      document.getElementById('totalItens').textContent = totalItens;
+      document.getElementById('comprados').textContent = comprados;
+      document.getElementById('valorTotal').textContent = formatarMoeda(valorTotal);
+    }
+
+    function toggleComprado(id) {
+      itens = itens.map(item => {
+        if (item.id !== id) return item;
+        const atualizado = {...item, comprado: !item.comprado};
+        registrarHistorico(atualizado.comprado ? 'Marcado como pago' : 'Marcado como a pagar', atualizado);
+        return atualizado;
+      });
+      salvar();
+    }
+
+    function excluirItem(id) {
+      if (!confirm('Deseja excluir este item?')) return;
+      const removido = itens.find(item => item.id === id);
+      if (removido) registrarHistorico('Removido da lista', removido);
+      itens = itens.filter(item => item.id !== id);
+      salvar();
+    }
+
+    function marcarTodos(status) {
+      itens = itens.map(item => {
+        if (item.comprado === status) return item;
+        const atualizado = {...item, comprado: status};
+        registrarHistorico(status ? 'Marcado como pago' : 'Marcado como a pagar', atualizado);
+        return atualizado;
+      });
+      salvar();
+    }
+
+    function limparComprados() {
+      if (!confirm('Deseja remover todos os itens pagos da lista? O histórico será mantido.')) return;
+      itens.filter(item => item.comprado).forEach(item => registrarHistorico('Removido da lista', item));
+      itens = itens.filter(item => !item.comprado);
+      salvar();
+    }
+
+    function renderLista() {
+      const lista = document.getElementById('lista');
+      const busca = document.getElementById('busca').value.toLowerCase().trim();
+      const categoria = document.getElementById('filtroCategoria').value;
+      const status = document.getElementById('filtroStatus').value;
+
+      const filtrados = itens.filter(item => {
+        const bateBusca = item.nome.toLowerCase().includes(busca) || item.obs.toLowerCase().includes(busca);
+        const bateCategoria = categoria === 'Todos' || item.categoria === categoria;
+        const bateStatus = status === 'Todos' || (status === 'Comprados' && item.comprado) || (status === 'Pendentes' && !item.comprado);
+        return bateBusca && bateCategoria && bateStatus;
+      });
+
+      if (!filtrados.length) {
+        lista.innerHTML = '<div class="empty">Nenhum item encontrado na lista.</div>';
+        return;
+      }
+
+      lista.innerHTML = filtrados.slice().reverse().map(item => {
+        const total = item.quantidade * item.valor;
+        return `
+          <div class="item ${item.comprado ? 'comprado' : ''}">
+            <input class="check" type="checkbox" aria-label="Marcar pagamento de ${escaparTexto(item.nome)}" ${item.comprado ? 'checked' : ''} onchange="toggleComprado('${item.id}')" />
+            <div>
+              <div class="nome-item">${escaparTexto(item.nome)}</div>
+              <div class="meta"><span class="badge" style="${item.comprado ? 'color:#86efac;border-color:#22c55e' : 'color:#fcd34d;border-color:#f59e0b'}">${item.comprado ? '✓ Pago' : 'A pagar'}</span></div>
+              <div class="meta">
+                <span class="badge">${escaparTexto(item.categoria)}</span>
+                Quantidade: ${escaparTexto(item.quantidade)}
+                ${item.obs ? ' • ' + escaparTexto(item.obs) : ''}
+                ${item.dataCompra ? '• Compra: ' + escaparTexto(formatarDataCompleta(item.dataCompra)) : '• Adicionado em ' + escaparTexto(item.criadoEm)}
+              </div>
+              <div class="actions">
+                <button class="secondary" onclick="toggleComprado('${item.id}')">${item.comprado ? 'Voltar para a pagar' : 'Marcar como pago'}</button>
+                <button class="danger" onclick="excluirItem('${item.id}')">Excluir</button>
+              </div>
+            </div>
+            <div class="price">${formatarMoeda(total)}</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    document.getElementById('dataCompra').value = dataPadrao2026();
+    atualizarDataSelecionada();
+    carregar();
+  </script>
+</body>
+</html>
